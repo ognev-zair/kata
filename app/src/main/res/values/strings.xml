@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">Abercrombie_CodeTest</string>
+  <string name="something_went_wrong">Something went wrong, please try again...</string>
+  <string name="error">Error</string>
+</resources>
