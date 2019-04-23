@@ -18,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/**
- *
- */
 public class ExplorePageFragment extends BaseFragment implements ExplorePageView {
   @Inject ExplorePagePresenter pagePresenter;
   @BindView(R.id.recycler_view) RecyclerView recyclerView;

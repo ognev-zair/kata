@@ -89,5 +89,4 @@ import org.junit.runner.RunWith;
     RobotHelper.performClick(android.R.id.button2);
     RobotHelper.checkIsActivityDisplayed(MainActivity.class.getName());
   }
-
 }

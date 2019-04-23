@@ -20,66 +20,20 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
-/**
- *
- */
 public class OkHttpBuilder {
 
   public static OkHttpClient createClient() {
     OkHttpClient client = null;
-    CertificateFactory cf = null;
-    InputStream cert = null;
-    Certificate ca = null;
     SSLContext sslContext = null;
 
-    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-    logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
-        : HttpLoggingInterceptor.Level.NONE);
-
     try {
-      cf = CertificateFactory.getInstance("X.509");
-      cert = App.getInstance()
-          .getResources()
-          .openRawResource(R.raw.mycert); // Place your 'my_cert.crt' file in `res/raw`
-
-      ca = cf.generateCertificate(cert);
-      cert.close();
-
-      String keyStoreType = KeyStore.getDefaultType();
-      KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-      keyStore.load(null, null);
-      keyStore.setCertificateEntry("ca", ca);
-
-      String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-      TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-      tmf.init(keyStore);
-
-
-      final TrustManager[] trustAllCerts = new TrustManager[] {
-          new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws
-                CertificateException {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-            }
-
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-              return new java.security.cert.X509Certificate[]{};
-            }
-          }
-      };
-
-
+      initKeyStore();
       sslContext = SSLContext.getInstance("SSL");
-      sslContext.init(null, trustAllCerts, null);
+      sslContext.init(null, trustAllCerts(), null);
 
       client = new OkHttpClient.Builder()
-          .sslSocketFactory(sslContext.getSocketFactory(),  (X509TrustManager)trustAllCerts[0])
-          .addInterceptor(logging)
+          .sslSocketFactory(sslContext.getSocketFactory(),  (X509TrustManager)trustAllCerts()[0])
+          .addInterceptor(getLogging())
           .readTimeout(60, TimeUnit.SECONDS)
           .writeTimeout(60, TimeUnit.SECONDS)
           .retryOnConnectionFailure(false)
@@ -92,4 +46,52 @@ public class OkHttpBuilder {
     return client;
   }
 
+  private static void initKeyStore()
+      throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+    CertificateFactory cf = null;
+    InputStream cert = null;
+    Certificate ca = null;
+
+    cf = CertificateFactory.getInstance("X.509");
+    cert = App.getInstance()
+        .getResources()
+        .openRawResource(R.raw.mycert);
+
+    ca = cf.generateCertificate(cert);
+    cert.close();
+
+    String keyStoreType = KeyStore.getDefaultType();
+    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+    keyStore.load(null, null);
+    keyStore.setCertificateEntry("ca", ca);
+
+    String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+    tmf.init(keyStore);
+  }
+
+  private static HttpLoggingInterceptor getLogging() {
+    return new HttpLoggingInterceptor()
+        .setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
+            : HttpLoggingInterceptor.Level.NONE);
+  }
+
+  private static TrustManager[] trustAllCerts() {
+    return new TrustManager[] {
+        new X509TrustManager() {
+          @Override
+          public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+          }
+
+          @Override
+          public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+          }
+
+          @Override
+          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return new java.security.cert.X509Certificate[]{};
+          }
+        }
+    };
+  }
 }

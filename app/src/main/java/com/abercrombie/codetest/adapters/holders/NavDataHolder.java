@@ -21,8 +21,6 @@ public class NavDataHolder extends RecyclerView.ViewHolder {
 
   public void bind(Navigation item, ExplorePageView view) {
     button.setText(item.getTitle());
-    button.setOnClickListener(v -> {
-      view.onNavClicked(item);
-    });
+    button.setOnClickListener(v -> view.onNavClicked(item));
   }
 }

@@ -11,9 +11,6 @@ import com.abercrombie.codetest.views.ExplorePageView;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- *
- */
 public class DataAdapter extends RecyclerView.Adapter<DataHolder> {
   private List<Data> dataList;
   private HashMap<Data, NavAdapter> navAdapterList;

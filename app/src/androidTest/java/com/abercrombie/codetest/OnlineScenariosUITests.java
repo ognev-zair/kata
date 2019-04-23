@@ -126,5 +126,4 @@ import static org.junit.Assert.assertEquals;
     RobotHelper.checkRecyclerViewElementDisplayed(R.id.bottom_description,0);
     RobotHelper.checkRecyclerViewElementDisplayed(R.id.navigation_recycler, 0);
   }
-
 }

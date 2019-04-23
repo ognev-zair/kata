@@ -10,9 +10,6 @@ import com.abercrombie.codetest.models.Navigation;
 import com.abercrombie.codetest.views.ExplorePageView;
 import java.util.List;
 
-/**
- *
- */
 public class NavAdapter extends RecyclerView.Adapter<NavDataHolder> {
   private List<Navigation> navigations;
   private ExplorePageView view;
@@ -35,5 +32,4 @@ public class NavAdapter extends RecyclerView.Adapter<NavDataHolder> {
   @Override public int getItemCount() {
     return navigations.size();
   }
-
 }

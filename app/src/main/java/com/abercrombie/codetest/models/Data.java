@@ -3,9 +3,6 @@ package com.abercrombie.codetest.models;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-/**
- *
- */
 public class Data {
   @SerializedName("title")
   private String title;

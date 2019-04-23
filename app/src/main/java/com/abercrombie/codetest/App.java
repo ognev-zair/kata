@@ -1,9 +1,7 @@
 package com.abercrombie.codetest;
 
 import android.app.Application;
-/**
- *
- */
+
 public class App extends Application {
   private static App instance;
 
@@ -15,6 +13,4 @@ public class App extends Application {
   public static App getInstance() {
     return instance;
   }
-
-
 }

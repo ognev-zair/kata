@@ -15,9 +15,6 @@ import com.abercrombie.codetest.injection.modules.AppModule;
 import com.abercrombie.codetest.injection.modules.NetworkModule;
 import com.abercrombie.codetest.views.ExplorePageView;
 
-/**
- *
- */
 public abstract class BaseFragment extends Fragment {
   protected View mainView;
   private Unbinder unbinder;

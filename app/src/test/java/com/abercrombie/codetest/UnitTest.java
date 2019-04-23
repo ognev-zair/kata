@@ -28,8 +28,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFragment;
 
-/**
- */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21, application = App.class) public class UnitTest {
   private MainActivity activity;
@@ -42,9 +40,9 @@ import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFr
         Mockito.spy(Robolectric.buildActivity(MainActivity.class).create().visible().start().get());
     MockitoAnnotations.initMocks(this);
     pageFragment = Mockito.spy(activity.getPageFragment());
-    presenter = Mockito.spy(pageFragment.getPagePresenter());
-    pageFragment.initView();
-    presenter.loadDataList();
+    presenter =  Mockito.spy(pageFragment.getPagePresenter());
+    //view = Mockito.spy(presenter.getView());
+    //presenter.setView(view);
     WebViewFragment fragment = WebViewFragment.newInstance(
         "https://www.abercrombie.com/shop/us/womens-dresses-and-rompers");
     startFragment(fragment);
@@ -70,7 +68,10 @@ import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFr
   }
 
   @Test public void test2VerifyInitView() {
+    Robolectric.getForegroundThreadScheduler().pause();
+    pageFragment.initView();
     verify(pageFragment).initView();
+    Robolectric.getForegroundThreadScheduler().reset();
   }
 
   @Test
@@ -94,11 +95,9 @@ import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFr
     assertNotNull(view.findViewById(R.id.promo_message));
     assertNotNull(view.findViewById(R.id.bottom_description));
   }
-
   /*
     Checking is data is correct for the first element in adapter
    */
-
   @Test public void test5AdapterItemData() {
     initData();
     View view = pageFragment.getRecyclerView().findViewHolderForAdapterPosition(0).itemView;
@@ -112,8 +111,8 @@ import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFr
     assertEquals(bottomDescription.getText().toString(), "Exclusive offer");
   }
 
-
   @Test public void test6PresenterLoadMethod() {
+    presenter.loadDataList();
     verify(presenter, times(1)).loadDataList();
   }
 
@@ -121,14 +120,35 @@ import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFr
     assertNotNull(webViewFragment);
     assertNotNull(webViewFragment.getProgressBar());
   }
-
   /*
       Test cancel REST API retrofit request
    */
   @Test
-  public void test8CancelDataRequest() {
+  public void test8PresenterCancelDataRequest() {
     assertTrue(presenter.getCompositeDisposable().size() > 0);
     presenter.onDestroy();
+    assertTrue(presenter.getCompositeDisposable().size() == 0);
+    verify(presenter, times(1)).onDestroy();
+  }
+
+  @Test
+  public void test9PresenterLoadAndCancel() {
+    for(int i = 0; i < 20; i++)
+      presenter.loadDataList();
+    // compositeDisposable().size() == 21 because first request was added
+    // to compositeDisposable list during "setup" with Robolectric
+    assertTrue(presenter.getCompositeDisposable().size() == 21);
+    verify(presenter, times(20)).loadDataList();
+    presenter.onDestroy();
+    assertTrue(presenter.getCompositeDisposable().size() == 0);
+  }
+
+  @Test
+  public void test10PresenterMultipleDestroy() {
+    assertTrue(presenter.getCompositeDisposable().size() > 0);
+    for(int i = 0; i < 20; i++)
+      presenter.onDestroy();
+    verify(presenter, times(20)).onDestroy();
     assertTrue(presenter.getCompositeDisposable().size() == 0);
   }
 
@@ -151,5 +171,4 @@ import static org.robolectric.shadows.support.v4.SupportFragmentTestUtil.startFr
     pageFragment.getAdapter().setDataList(dataList);
     pageFragment.getAdapter().notifyDataSetChanged();
   }
-
 }

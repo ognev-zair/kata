@@ -8,9 +8,6 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 import com.abercrombie.codetest.R;
 
-/**
- *
- */
 public class WebViewFragment extends BaseFragment {
   private static String URL = "URL";
   @BindView(R.id.web_view) WebView webView;
